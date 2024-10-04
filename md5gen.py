@@ -4,7 +4,7 @@ import multiprocessing
 import queue
 import pandas as pd
 import csv
-
+import argparse
 
 def run_command(cmd):
     """Run a shell command and return its output."""
@@ -92,12 +92,21 @@ def get_file_info_parallel(path, num_processes=None):
     for p in processes:
         p.join()
 
-    write_results_to_csv(results,'/home/users/nadeem.yaseen/osfpga/svg/bypythondump.csv')
-    read_and_sort_csv('/home/users/nadeem.yaseen/osfpga/svg/bypythondump.csv','/home/users/nadeem.yaseen/osfpga/svg/bypythondump_sorted.csv')
+    write_results_to_csv(results,csv_path)
+    read_and_sort_csv(csv_path,csv_path)
     #return results
 
 
 if __name__ == "__main__":
-    path = "/home/users/nadeem.yaseen/osfpga/svg"
-    get_file_info_parallel(path)
+     # Command-line argument parsing
+    parser = argparse.ArgumentParser(description="Process files in a directory and calculate MD5 checksums.")
+    parser.add_argument("-d, --directory", type=str,help="Top-level directory to start processing", dest='top_dir')
+    parser.add_argument("-p", "--process", type=int, default=4, help="Number of threads for parallel processing", dest='prcess')
+    parser.add_argument("-csv", "--csvpath", type=str, default='dump.csv', help="CSV File to dump the data", dest='csv_dump')
+    args = parser.parse_args()
+
+    top_directory = args.top_dir
+    num_threads = args.prcess
+    csv_path = args.csv_dump
+    get_file_info_parallel(top_directory,num_threads)
     #print(results)
